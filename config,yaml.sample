@@ -1,0 +1,8 @@
+feishu:
+  appId: ***
+  appSecret: ***
+  verificationToken: ***
+  encryptKey: ***
+
+server:
+  port: 3000

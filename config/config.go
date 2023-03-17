@@ -10,14 +10,6 @@ type Config struct {
 	Feishu feishuapi.Config
 	Server struct {
 		Port int
-
-		// add your configuration fields here
-		ExampleField1 string
-	}
-
-	// add your configuration fields here
-	ExampleField2 struct {
-		ExampleField3 int
 	}
 }
 

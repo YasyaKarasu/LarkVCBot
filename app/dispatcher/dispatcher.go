@@ -1,10 +1,10 @@
 package dispatcher
 
 import (
+	"LarkVCBot/config"
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
-	"xlab-feishu-robot/config"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
@@ -27,7 +27,7 @@ func Dispatcher(c *gin.Context) {
 	// see: https://open.feishu.cn/document/ukTMukTMukTM/uUTNz4SN1MjL1UzM
 
 	// get raw body (bytes)
-	rawBody, _ := ioutil.ReadAll(c.Request.Body)
+	rawBody, _ := io.ReadAll(c.Request.Body)
 
 	// decrypt data if ENCRYPT is on
 	var requestStr string
@@ -67,7 +67,7 @@ func Dispatcher(c *gin.Context) {
 	}
 
 	if handler, exists := eventMap[req.EventType]; exists {
-		handler(req.Event)
+		go handler(req.Event)
 		c.String(http.StatusOK, "OK")
 		return
 	} else {
