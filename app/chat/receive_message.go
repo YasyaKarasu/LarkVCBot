@@ -6,7 +6,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type messageHandler func(*MessageEvent)
+type messageHandler func(messageevent *MessageEvent, args ...interface{})
 
 // for more detailed information, see https://open.feishu.cn/document/uAjLw4CM/ukTMukTMukTM/reference/im-v1/message/events/receive
 type MessageEvent struct {

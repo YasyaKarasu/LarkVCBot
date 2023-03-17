@@ -19,6 +19,7 @@ func group(messageevent *MessageEvent) {
 
 func groupTextMessage(messageevent *MessageEvent) {
 	// get the pure text message, without @xxx
+	logrus.Info(messageevent.Message.Content)
 	messageevent.Message.Content = strings.TrimSuffix(strings.TrimPrefix(messageevent.Message.Content, "{\"text\":\""), "\"}")
 	messageevent.Message.Content = messageevent.Message.Content[strings.Index(messageevent.Message.Content, " ")+1:]
 	logrus.WithFields(logrus.Fields{"message content": messageevent.Message.Content}).Info("Receive group TEXT message")
@@ -32,7 +33,7 @@ func groupTextMessage(messageevent *MessageEvent) {
 	}
 }
 
-func groupMessageRegister(f messageHandler, s string) {
+func GroupMessageRegister(f messageHandler, s string) {
 
 	if _, isEventExist := groupMessageMap[s]; isEventExist {
 		logrus.Warning("Double declaration of group message handler: ", s)
