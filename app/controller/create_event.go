@@ -28,11 +28,16 @@ func CreateEvent(messageevent *chat.MessageEvent, args ...interface{}) {
 		WithReminders([]int{5, 10, 15}),
 	)
 
+	members := global.Cli.GroupGetMembers(messageevent.Message.Chat_id, feishuapi.OpenId)
+	attendees_ := []feishuapi.CalendarEventAttendee{}
+	for _, member := range members {
+		attendees_ = append(attendees_, feishuapi.CalendarEventAttendee{
+			Type:   feishuapi.AttendeeTypeUser,
+			UserId: member.MemberId,
+		})
+	}
 	attendees := global.Cli.CalendarEventAttendeeCreate(calId, event.Id, feishuapi.OpenId, feishuapi.DefaultCalendarEventAttendeeCreateRequest().
-		WithAttendee(feishuapi.CalendarEventAttendee{
-			Type:   feishuapi.AttendeeTypeChat,
-			UserId: messageevent.Message.Chat_id,
-		}),
+		WithAttendees(attendees_),
 	)
 	logrus.Info(attendees)
 }
