@@ -32,7 +32,7 @@ func GetUserAccessToken(c *gin.Context) {
 		"user_access_token": accessToken.Access_token,
 	}).Info("get user access token")
 
-	chatId := c.Query("status")
+	chatId := c.Query("state")
 	global.FeishuClient.MessageSend(feishuapi.GroupChatId, chatId, feishuapi.Text, "请输入知识库ID（获取方式：飞书云文档-知识库-知识空间设置-链接最后的数字）。")
 	GroupAwatingStatus[chatId] = Waiting4URL
 
