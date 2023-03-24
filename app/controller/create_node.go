@@ -18,22 +18,24 @@ const (
 var GroupAwatingStatus = make(map[string]AwatingStatus)
 
 func recursivelyCopyNode(sourceSpaceId string, sourceParentNode string, targetSpaceId string, targetParentNode string) bool {
+	nodeInfo := global.FeishuClient.KnowledgeSpaceGetNodeInfo(sourceParentNode)
+	copiedNodeParent := global.FeishuClient.KnowledgeSpaceCopyNode(
+		sourceSpaceId,
+		sourceParentNode,
+		targetSpaceId,
+		targetParentNode,
+		nodeInfo.Title,
+	)
+	if copiedNodeParent == nil {
+		return false
+	}
 	nodes := global.FeishuClient.KnowledgeSpaceGetAllNodes(
 		sourceSpaceId,
 		sourceParentNode,
 	)
 	for _, value := range nodes {
-		subNodeParent := global.FeishuClient.KnowledgeSpaceCopyNode(
-			sourceSpaceId,
-			sourceParentNode,
-			targetSpaceId,
-			targetParentNode,
-		)
-		if subNodeParent == nil {
+		if !recursivelyCopyNode(sourceSpaceId, value.NodeToken, targetSpaceId, copiedNodeParent.NodeToken) {
 			return false
-		}
-		if value.HasChild {
-			return recursivelyCopyNode(sourceSpaceId, value.NodeToken, targetSpaceId, subNodeParent.NodeToken)
 		}
 	}
 	return true
