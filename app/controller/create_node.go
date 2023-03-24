@@ -45,7 +45,7 @@ func createVCRecordNodes(messageevent *chat.MessageEvent) {
 	global.FeishuClient.KnowledgeSpaceAddBotsAsAdmin(
 		spaceId,
 		[]string{botId},
-		userAccessToken[messageevent.Sender.Sender_id.Open_id],
+		"Bearer "+userAccessToken[messageevent.Sender.Sender_id.Open_id],
 	)
 
 	if recursivelyCopyNode(config.C.TemplateSpace.SpaceID, config.C.TemplateSpace.NodeToken, spaceId, "") {
