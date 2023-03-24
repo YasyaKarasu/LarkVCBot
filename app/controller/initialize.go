@@ -11,7 +11,7 @@ import (
 func initialize(event *chat.MessageEvent, args ...interface{}) {
 	global.FeishuClient.MessageSend(
 		feishuapi.GroupChatId,
-		event.Message.Message_id,
+		event.Message.Chat_id,
 		feishuapi.Text,
 		"请先查看并点击【机器人私聊会话】中的链接进行用户鉴权，然后返回进行后续操作。",
 	)
