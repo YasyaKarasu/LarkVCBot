@@ -11,6 +11,13 @@ type Config struct {
 	Server struct {
 		Port int
 	}
+	Url struct {
+		Url4AccessToken string
+	}
+	TemplateSpace struct {
+		SpaceID   string
+		NodeToken string
+	}
 }
 
 var C Config

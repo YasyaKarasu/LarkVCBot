@@ -9,17 +9,17 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func CreateEvent(messageevent *chat.MessageEvent, args ...interface{}) {
+func createEvent(messageevent *chat.MessageEvent, args ...interface{}) {
 	t, _ := time.ParseInLocation("2006-01-02 15:04:05", "2023-03-16 17:30:00", time.Local)
 
-	calendar := global.Cli.CalendarCreate(feishuapi.DefaultCalendarCreateRequest().
+	calendar := global.FeishuClient.CalendarCreate(feishuapi.DefaultCalendarCreateRequest().
 		WithSummary("test").
 		WithDescription("test_calendar_create").
 		WithPermissions(feishuapi.CalendarShowOnlyFreeBusy),
 	)
 	calId := calendar.Id
 
-	event := global.Cli.CalendarEventCreate(calId, feishuapi.DefaultCalendarEventCreateRequest().
+	event := global.FeishuClient.CalendarEventCreate(calId, feishuapi.DefaultCalendarEventCreateRequest().
 		WithSummary("test").
 		WithDescription("test_calendar_event_create").
 		WithNeedNotification(true).
@@ -28,7 +28,7 @@ func CreateEvent(messageevent *chat.MessageEvent, args ...interface{}) {
 		WithReminders([]int{5, 10, 15}),
 	)
 
-	members := global.Cli.GroupGetMembers(messageevent.Message.Chat_id, feishuapi.OpenId)
+	members := global.FeishuClient.GroupGetMembers(messageevent.Message.Chat_id, feishuapi.OpenId)
 	attendees_ := []feishuapi.CalendarEventAttendee{}
 	for _, member := range members {
 		attendees_ = append(attendees_, feishuapi.CalendarEventAttendee{
@@ -36,7 +36,7 @@ func CreateEvent(messageevent *chat.MessageEvent, args ...interface{}) {
 			UserId: member.MemberId,
 		})
 	}
-	attendees := global.Cli.CalendarEventAttendeeCreate(calId, event.Id, feishuapi.OpenId, feishuapi.DefaultCalendarEventAttendeeCreateRequest().
+	attendees := global.FeishuClient.CalendarEventAttendeeCreate(calId, event.Id, feishuapi.OpenId, feishuapi.DefaultCalendarEventAttendeeCreateRequest().
 		WithAttendees(attendees_),
 	)
 	logrus.Info(attendees)

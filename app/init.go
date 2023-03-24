@@ -20,6 +20,8 @@ func Register(r *gin.Engine) {
 	// DO NOT CHANGE LINES BELOW
 	// register dispatcher
 	r.POST("/feiShu/Event", dispatcher.Dispatcher)
+
+	r.GET("/api/getUserAccessToken", controller.GetUserAccessToken)
 }
 
 func Init(r *gin.Engine) {
