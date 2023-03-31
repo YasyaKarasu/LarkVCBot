@@ -43,7 +43,7 @@ func CheckEvents() {
 			} else {
 				var record feishuapi.RecordInfo
 				bytes2struct([]byte(recordInfo), &record)
-				fields := global.FeishuClient.DocumentGetRecord(
+				fields := global.FeishuClient.DocumentGetRecordWithoutModifiedTime(
 					record.AppToken,
 					record.TableId,
 					record.RecordId,
