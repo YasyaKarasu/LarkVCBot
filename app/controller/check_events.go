@@ -4,6 +4,7 @@ import (
 	"LarkVCBot/global"
 	"LarkVCBot/model"
 	"encoding/json"
+	"strconv"
 
 	"github.com/YasyaKarasu/feishuapi"
 	"github.com/robfig/cron/v3"
@@ -27,13 +28,14 @@ func CheckEvents() {
 		for _, event := range events {
 			if recordInfo := model.GetSessionString(event.Id); recordInfo == "" {
 				groupSpace, _ := model.QueryGroupSpaceByGroupChatID(calendar.GroupChatID)
+				startTime, _ := strconv.Atoi(event.EventInfo.StartTime.Timestamp)
 				record := global.FeishuClient.DocumentCreateRecord(
 					groupSpace.ScheduleToken,
 					groupSpace.ScheduleTableID,
 					map[string]any{
 						"标题": event.EventInfo.Summary,
 						"备注": event.EventInfo.Description,
-						"日期": event.EventInfo.StartTime.Timestamp,
+						"日期": startTime,
 						"状态": "未开始",
 					},
 				)
@@ -46,6 +48,7 @@ func CheckEvents() {
 					record.TableId,
 					record.RecordId,
 				).Fields
+				startTime, _ := strconv.Atoi(event.EventInfo.StartTime.Timestamp)
 				global.FeishuClient.DocumentUpdateRecord(
 					record.AppToken,
 					record.TableId,
@@ -55,7 +58,7 @@ func CheckEvents() {
 						"备注":  event.EventInfo.Description,
 						"附件":  fields["附件"],
 						"主持人": fields["主持人"],
-						"日期":  event.EventInfo.StartTime.Timestamp,
+						"日期":  startTime,
 						"状态":  fields["状态"],
 					},
 				)
