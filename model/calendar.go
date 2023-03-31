@@ -3,7 +3,7 @@ package model
 type GroupCalendar struct {
 	ID          uint   `gorm:"not null;autoIncrement;primaryKey"`
 	GroupChatID string `gorm:"not null;uniqueIndex;size:45"`
-	CalendarID  string `gorm:"not null;size:55"`
+	CalendarID  string `gorm:"not null;size:65"`
 }
 
 func QueryGroupCalendarByID(id uint) (*GroupCalendar, error) {
