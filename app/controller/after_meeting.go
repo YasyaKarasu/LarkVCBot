@@ -10,93 +10,104 @@ import (
 
 var Meeting model.Meeting
 
+type MeetingFields struct {
+	MeetingName          string   `json:"会议"`
+	PeopleShouldAttend   []string `json:"应到人员"`
+	PeopleActuallyAttend []string `json:"实际参会人员"`
+	PeopleLeave          []string `json:"请假人员"`
+	PeopleAbsent         []string `json:"缺席人员"`
+}
+
 type MeetingRecord struct {
-	MeetingName          string
-	PeopleShouldAttend   []string
-	PeopleActuallyAttend []string
-	PeopleLeave          []string
-	PeopleAbsent         []string
+	Code int64 `json:"code"`
+	Data struct {
+		Record struct {
+			Fields   MeetingFields `json:"fields"`
+			ID       string        `json:"id"`
+			RecordID string        `json:"record_id"`
+		} `json:"record"`
+	} `json:"data"`
+	Msg string `json:"msg"`
 }
 
-func NewMeetingRecord(data []byte) MeetingRecord {
+func NewMeetingRecord(data []byte) (MeetingRecord, error) {
 	var meeting MeetingRecord
-	json.Unmarshal(data, &meeting)
-	return meeting
-
+	err := json.Unmarshal(data, &meeting)
+	return meeting, err
 }
 
-func recursivelyGetNodes(spaceId string, parentNode string) *[]feishuapi.NodeInfo {
-	var allNodes []feishuapi.NodeInfo
-	if parentNode == "" {
-		nodes := global.FeishuClient.KnowledgeSpaceGetAllNodes(spaceId)
-		allNodes = append(allNodes, nodes...)
-	}
+//func Query(Meeting *model.Meeting){
+//	// 从 Bitale 获取指定会议对应的记录
+//	space, err := model.QueryGroupSpaceByGroupChatID(Meeting.GroupChatID)
+//	if err != nil {
+//		logrus.Error(err)
+//	}
+//	data := global.FeishuClient.DocumentGetRecordInByte(space.ScheduleToken, space.ScheduleTableID, Meeting.RecordIdInBitable)
+//	myMeetingRecord, err := NewMeetingRecord(data)
+//	if err != nil {
+//		logrus.Error(err)
+//	}
+//	logrus.Debug(myMeetingRecord)
+//}
 
-	for _, value := range allNodes {
-		if value.HasChild {
-			nodes := recursivelyGetNodes(spaceId, value.ObjToken)
-			allNodes = append(allNodes, *nodes...)
+// 调用说明：对每个会议（meetingId），使用定时器在会议前调用
+func UpdateAttendeesBeforeMeeting(meetingId uint) bool {
+	var fields MeetingFields
+	meeting, err := model.QueryMeetingById(meetingId)
+	if err != nil {
+		logrus.Error(err)
+		return false
+	}
+	calendarId := meeting.CalendarID
+	eventId := meeting.EventId
+	Attendees := global.FeishuClient.CalendarEventAttendeeQuery(calendarId, eventId, feishuapi.OpenId)
+	for _, v := range Attendees {
+		switch v.RSVPStatus {
+		case feishuapi.Accept:
+			fields.PeopleShouldAttend = append(fields.PeopleShouldAttend, v.UserId)
+		case feishuapi.Decline:
+			fields.PeopleLeave = append(fields.PeopleLeave, v.UserId)
 		}
 	}
-	return &allNodes
-}
-
-func getDocumentByTitleFromSpace(spaceId, title string) *feishuapi.NodeInfo {
-
-	nodes := recursivelyGetNodes(spaceId, "")
-	for _, v := range *nodes {
-		if v.Title == title {
-			return &v
-		}
+	res := updateMeetingScheduleTable(meeting, fields.PeopleShouldAttend, nil, fields.PeopleLeave, nil)
+	if !res {
+		return false
+	} else {
+		return true
 	}
-	return nil
 }
 
-/*
-*
-从知识库获取排期表对应的多维表格
-*/
-func getMeetingScheduleTable(spaceId string) feishuapi.TableInfo {
-	meetingSchedule := getDocumentByTitleFromSpace(spaceId, "会议排期").ObjToken
-	meetingScheduleBitTable := global.FeishuClient.DocumentGetAllBitables(meetingSchedule)
-	tables := global.FeishuClient.DocumentGetAllTables(meetingScheduleBitTable[0].AppToken)
-	return tables[0]
+func updateMeetingScheduleTable(Meeting *model.Meeting, PeopleShouldAttend []string, PeopleActuallyAttend []string, PeopleLeave []string, PeopleAbsent []string) bool {
+	space, err := model.QueryGroupSpaceByGroupChatID(Meeting.GroupChatID)
+	if err != nil {
+		logrus.Error(err)
+		return false
+	}
+	newFields := make(map[string]any)
+	newFields["应到人员"] = PeopleShouldAttend
+	newFields["实际参会人员"] = PeopleActuallyAttend
+	newFields["请假人员"] = PeopleLeave
+	newFields["缺席人员"] = PeopleAbsent
+
+	global.FeishuClient.DocumentUpdateRecord(space.ScheduleToken, space.ScheduleTableID, Meeting.RecordIdInBitable, newFields)
+	return true
 }
 
-/*
-*
-TODO:
-*/
-func getSpeacIdFromChat(chatId string) string {
-	//	考虑用db
-}
+// 从会议记录签到读取,会议结束后调用
+func UpdateAttendeesAfterMeeting(meetingId uint) bool {
 
-/*
-*
-TODO
-更新表格
-*/
-func updateMeetingScheduleTable(Meeting *model.Meeting, PeopleShouldAttend any, PeopleActuallyAttend any, PeopleAbsent any, PeopleLeave any) {
-	//通过Meeting 获取 chatId , 进而获取 spaceId ？
-	spaceId := getSpeacIdFromChat(Meeting.ChatId)
-	table := getMeetingScheduleTable(spaceId)
-	record := global.FeishuClient.DocumentGetRecordInByte(table.AppToken, table.TableId, Meeting.RecordIdInBitable)
-	myMeetingRecord := NewMeetingRecord(record)
-	myMeetingRecord.PeopleActuallyAttend = PeopleActuallyAttend.([]string)
-	myMeetingRecord.PeopleShouldAttend = PeopleShouldAttend.([]string)
-	myMeetingRecord.PeopleLeave = PeopleLeave.([]string)
-	myMeetingRecord.PeopleAbsent = PeopleAbsent.([]string)
-	//TODO: Struct2Map
-	global.FeishuClient.DocumentUpdateRecord(table.AppToken, table.TableId, Meeting.RecordIdInBitable, Struct2Map(myMeetingRecord))
-	// 获取对应会议的记录
+	var fields MeetingFields
+	meeting, err := model.QueryMeetingById(meetingId)
+	if err != nil {
+		logrus.Error(err)
+		return false
+	}
+	//TODO: 读签到 保存至 fields
 
-	logrus.Debug(myMeetingRecord)
-
-	//更新记录
-	//global.FeishuClient.DocumentUpdateRecord()
-
-}
-
-func Struct2Map(record MeetingRecord) map[string]any {
-
+	res := updateMeetingScheduleTable(meeting, nil, fields.PeopleActuallyAttend, nil, fields.PeopleAbsent)
+	if !res {
+		return false
+	} else {
+		return true
+	}
 }
