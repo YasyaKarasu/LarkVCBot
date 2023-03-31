@@ -57,13 +57,9 @@ func recursivelyFindBitable(spaceId string, nodeToken string, title string) stri
 	return ""
 }
 
-func FindTableInBitable(AppToken string, name string) string {
+func FindTableInBitable(AppToken string) string {
 	tables := global.FeishuClient.DocumentGetAllTables(AppToken)
-	for _, value := range tables {
-		if value.Name == name {
-			return value.AppToken
-		}
-	}
+	return tables[0].TableId
 	return ""
 }
 
@@ -84,11 +80,11 @@ func createVCRecordNodes(messageevent *chat.MessageEvent) {
 			GroupChatID:     messageevent.Message.Chat_id,
 			SpaceID:         spaceId,
 			ScheduleToken:   scheduleToken,
-			ScheduleTableID: FindTableInBitable(scheduleToken, "样例"),
+			ScheduleTableID: FindTableInBitable(scheduleToken),
 			OverallToken:    overallToken,
-			OverallTableID:  FindTableInBitable(overallToken, "表格"),
+			OverallTableID:  FindTableInBitable(overallToken),
 			PersonalToken:   personalToken,
-			PersonalTableID: FindTableInBitable(personalToken, "表格"),
+			PersonalTableID: FindTableInBitable(personalToken),
 		})
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
