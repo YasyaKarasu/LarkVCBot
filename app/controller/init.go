@@ -27,7 +27,6 @@ func InitEvent() {
 }
 
 func InitMessageBind() {
-	chat.GroupMessageRegister(createEvent, "创建日程")
 	chat.GroupMessageRegister(initialize, "初始化")
 	chat.GroupStatusDispatcherRegister(StatusDispatcher)
 }
