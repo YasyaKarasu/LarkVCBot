@@ -3,7 +3,7 @@ module LarkVCBot
 go 1.20
 
 require (
-	github.com/YasyaKarasu/feishuapi v1.2.14
+	github.com/YasyaKarasu/feishuapi v1.2.15
 	github.com/gin-gonic/gin v1.9.0
 	github.com/redis/go-redis/v9 v9.0.2
 	github.com/robfig/cron/v3 v3.0.1
