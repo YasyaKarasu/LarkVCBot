@@ -30,6 +30,9 @@ func main() {
 	model.Connect(mysql.Open(config.GetDatabaseLoginInfo()))
 	model.CreateTables()
 
+	// redis
+	model.ConnectRedis()
+
 	// robot server
 	r := gin.Default()
 	app.Init(r)
