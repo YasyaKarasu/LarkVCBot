@@ -22,7 +22,7 @@ func groupTextMessage(messageevent *MessageEvent) {
 	// get the pure text message, without @xxx
 	logrus.Info(messageevent.Message.Content)
 	messageevent.Message.Content = strings.TrimSuffix(strings.TrimPrefix(messageevent.Message.Content, "{\"text\":\""), "\"}")
-	messageevent.Message.Content = messageevent.Message.Content[strings.Index(messageevent.Message.Content, " ")+1:]
+	messageevent.Message.Content = strings.TrimPrefix(messageevent.Message.Content, " ")
 	logrus.WithFields(logrus.Fields{"message content": messageevent.Message.Content}).Info("Receive group TEXT message")
 
 	var leftMessage string
