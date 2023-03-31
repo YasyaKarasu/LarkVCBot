@@ -2,14 +2,14 @@ package model
 
 type GroupSpace struct {
 	ID              uint   `gorm:"not null;autoIncrement;primaryKey"`
-	GroupChatID     string `gorm:"not null;uniqueIndex;size:40"`
-	SpaceID         string `gorm:"not null;size:25"`
-	ScheduleToken   string `gorm:"not null;size:30"`
-	ScheduleTableID string `gorm:"not null:size:20"`
-	OverallToken    string `gorm:"not null;size:30"`
-	OverallTableID  string `gorm:"not null;size:20"`
-	PersonalToken   string `gorm:"not null;size:30"`
-	PersonalTableID string `gorm:"not null;size:20"`
+	GroupChatID     string `gorm:"not null;uniqueIndex;size:45"`
+	SpaceID         string `gorm:"not null;size:30"`
+	ScheduleToken   string `gorm:"not null;size:35"`
+	ScheduleTableID string `gorm:"not null:size:25"`
+	OverallToken    string `gorm:"not null;size:35"`
+	OverallTableID  string `gorm:"not null;size:25"`
+	PersonalToken   string `gorm:"not null;size:35"`
+	PersonalTableID string `gorm:"not null;size:25"`
 }
 
 func QueryGroupSpaceByID(id uint) (*GroupSpace, error) {

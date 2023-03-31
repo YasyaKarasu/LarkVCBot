@@ -98,10 +98,11 @@ func createVCRecordNodes(messageevent *chat.MessageEvent) {
 		}
 
 		groupInfo := global.FeishuClient.GroupGetInfo(messageevent.Message.Chat_id)
-		calendar := global.FeishuClient.CalendarCreate(feishuapi.DefaultCalendarCreateRequest().
-			WithSummary("「" + groupInfo.Name + "」's Calendar").
-			WithDescription("LarkVCBot calendar for group 「" + groupInfo.Name + "」").
+		calendar := global.FeishuClient.CalendarCreateByUser(feishuapi.DefaultCalendarCreateRequest().
+			WithSummary("「"+groupInfo.Name+"」's Calendar").
+			WithDescription("LarkVCBot calendar for group 「"+groupInfo.Name+"」").
 			WithPermissions(feishuapi.CalendarPublic),
+			"Bearer "+userAccessToken[messageevent.Sender.Sender_id.Open_id],
 		)
 		_, err = model.CreateGroupCalendar(&model.GroupCalendar{
 			GroupChatID: messageevent.Message.Chat_id,
@@ -113,7 +114,7 @@ func createVCRecordNodes(messageevent *chat.MessageEvent) {
 				"calendar_id": calendar.Id,
 			}).Error(err)
 		}
-		global.FeishuClient.CalendarSubscribe(calendar.Id, "Bearer "+userAccessToken[messageevent.Sender.Sender_id.Open_id])
+		global.FeishuClient.CalendarSubscribeByBot(calendar.Id)
 
 		global.FeishuClient.MessageSend(
 			feishuapi.GroupChatId,

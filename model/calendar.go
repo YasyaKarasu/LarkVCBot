@@ -2,7 +2,7 @@ package model
 
 type GroupCalendar struct {
 	ID          uint   `gorm:"not null;autoIncrement;primaryKey"`
-	GroupChatID string `gorm:"not null;uniqueIndex;size:40"`
+	GroupChatID string `gorm:"not null;uniqueIndex;size:45"`
 	CalendarID  string `gorm:"not null;size:55"`
 }
 
