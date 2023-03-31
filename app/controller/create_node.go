@@ -23,7 +23,7 @@ func recursivelyCopyNode(sourceSpaceId string, sourceParentNode string, targetSp
 		return ""
 	}
 	if !nodeInfo.HasChild {
-		return ""
+		return nodeInfo.NodeToken
 	}
 	nodes := global.FeishuClient.KnowledgeSpaceGetAllNodes(
 		sourceSpaceId,
