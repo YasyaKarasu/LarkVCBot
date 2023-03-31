@@ -6,14 +6,17 @@ import (
 	"encoding/json"
 
 	"github.com/YasyaKarasu/feishuapi"
+	"github.com/robfig/cron/v3"
 	"github.com/sirupsen/logrus"
 )
 
 func init() {
-	global.Timer.AddFunc("@every 5m", ListEvents)
+	timer := new(cron.Cron)
+	timer.AddFunc("@every 5m", CheckEvents)
+	timer.Start()
 }
 
-func ListEvents() {
+func CheckEvents() {
 	calendars, err := model.QueryAllGoupCalendars()
 	if err != nil {
 		logrus.Error(err)
