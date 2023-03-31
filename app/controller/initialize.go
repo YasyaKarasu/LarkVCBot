@@ -5,19 +5,22 @@ import (
 	"LarkVCBot/config"
 	"LarkVCBot/global"
 	"LarkVCBot/model"
+	"errors"
 
 	"github.com/YasyaKarasu/feishuapi"
+	"gorm.io/gorm"
 )
 
 func initialize(event *chat.MessageEvent, args ...any) {
-	groupSpace, _ := model.QueryGroupSpaceByGroupChatID(event.Message.Chat_id)
-	if groupSpace != nil {
+	groupSpace, err := model.QueryGroupSpaceByGroupChatID(event.Message.Chat_id)
+	if !errors.Is(err, gorm.ErrRecordNotFound) {
 		global.FeishuClient.MessageSend(
 			feishuapi.GroupChatId,
 			event.Message.Chat_id,
 			feishuapi.Text,
 			"此群已初始化，知识空间为：https://xn4zlkzg4p.feishu.cn/wiki/space/"+groupSpace.SpaceID,
 		)
+		return
 	}
 	global.FeishuClient.MessageSend(
 		feishuapi.GroupChatId,
