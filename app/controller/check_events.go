@@ -28,7 +28,8 @@ func CheckEvents() {
 		for _, event := range events {
 			if recordInfo := model.GetSessionString(event.Id); recordInfo == "" {
 				groupSpace, _ := model.QueryGroupSpaceByGroupChatID(calendar.GroupChatID)
-				startTime, _ := strconv.Atoi(event.EventInfo.StartTime.Timestamp)
+				startTime, _ := strconv.ParseUint(event.EventInfo.StartTime.Timestamp, 10, 64)
+				startTime *= 1000
 				record := global.FeishuClient.DocumentCreateRecord(
 					groupSpace.ScheduleToken,
 					groupSpace.ScheduleTableID,
@@ -48,7 +49,8 @@ func CheckEvents() {
 					record.TableId,
 					record.RecordId,
 				).Fields
-				startTime, _ := strconv.Atoi(event.EventInfo.StartTime.Timestamp)
+				startTime, _ := strconv.ParseUint(event.EventInfo.StartTime.Timestamp, 10, 64)
+				startTime *= 1000
 				global.FeishuClient.DocumentUpdateRecord(
 					record.AppToken,
 					record.TableId,
