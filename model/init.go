@@ -30,7 +30,10 @@ func CreateTables() {
 	if gormDb == nil {
 		logrus.Fatal("DB is nil")
 	}
-	err := gormDb.AutoMigrate(&GroupSpace{})
+	err := gormDb.AutoMigrate(
+		&GroupSpace{},
+		&GroupCalendar{},
+	)
 	if err != nil {
 		logrus.Fatal(err)
 	}

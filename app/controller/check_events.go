@@ -11,7 +11,7 @@ import (
 )
 
 func init() {
-	timer := new(cron.Cron)
+	timer := cron.New()
 	timer.AddFunc("@every 5m", CheckEvents)
 	timer.Start()
 }

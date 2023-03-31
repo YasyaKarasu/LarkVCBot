@@ -1,20 +1,20 @@
 package model
 
 type GroupCalendar struct {
-	ID          uint   `gorm:"not null;autoIncrement"`
-	GroupChatID string `gorm:"not null;primaryKey"`
+	ID          uint   `gorm:"not null;autoIncrement;primaryKey"`
+	GroupChatID string `gorm:"not null;uniqueIndex"`
 	CalendarID  string `gorm:"not null"`
 }
 
 func QueryGroupCalendarByID(id uint) (*GroupCalendar, error) {
 	var result GroupCalendar
-	err := gormDb.Where(&GroupCalendar{ID: id}).First(&result)
+	err := gormDb.First(&result, id)
 	return &result, err.Error
 }
 
 func QueryGroupCalendarByGroupChatID(groupChatID string) (*GroupCalendar, error) {
 	var result GroupCalendar
-	err := gormDb.First(&result, groupChatID)
+	err := gormDb.Where(&GroupCalendar{GroupChatID: groupChatID}).First(&result)
 	return &result, err.Error
 }
 
