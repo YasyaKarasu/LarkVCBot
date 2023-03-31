@@ -6,7 +6,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type messageHandler func(messageevent *MessageEvent, args ...interface{})
+type messageHandler func(messageevent *MessageEvent, args ...any)
 
 // for more detailed information, see https://open.feishu.cn/document/uAjLw4CM/ukTMukTMukTM/reference/im-v1/message/events/receive
 type MessageEvent struct {
@@ -55,7 +55,7 @@ func Receive(event map[string]any) {
 	}
 }
 
-func map2struct(m map[string]interface{}, stru interface{}) {
+func map2struct(m map[string]any, stru any) {
 	bytes, _ := json.Marshal(m)
 	json.Unmarshal(bytes, stru)
 }

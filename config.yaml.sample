@@ -13,3 +13,16 @@ url:
 templateSpace:
   spaceID:
   nodeToken:
+
+mysql:
+  host:
+  port:
+  user:
+  password:
+  dbname:
+
+redis:
+  host:
+  port:
+  password:
+  db:

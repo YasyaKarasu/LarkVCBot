@@ -57,7 +57,7 @@ func getSpeacIdFromChat(chatId string) string {
 TODO
 更新表格
 */
-func updateMeetingScheduleTable(Meeting interface{}, PeopleShouldAttend interface{}, PeopleActuallyAttend interface{}, PeopleAbsent interface{}, PeopleLeave interface{}) {
+func updateMeetingScheduleTable(Meeting any, PeopleShouldAttend any, PeopleActuallyAttend any, PeopleAbsent any, PeopleLeave any) {
 	//通过Meeting 获取 chatId , 进而获取 spaceId ？
 
 	spaceId := getSpeacIdFromChat(Meeting.chatId)

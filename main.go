@@ -5,12 +5,14 @@ import (
 	"LarkVCBot/config"
 	"LarkVCBot/docs"
 	"LarkVCBot/global"
+	"LarkVCBot/model"
 	"fmt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"gorm.io/driver/mysql"
 )
 
 func main() {
@@ -23,6 +25,10 @@ func main() {
 	// feishu api client
 	config.SetupFeishuApiClient(&global.FeishuClient)
 	global.FeishuClient.StartTokenTimer()
+
+	// database
+	model.Connect(mysql.Open(config.GetDatabaseLoginInfo()))
+	model.CreateTables()
 
 	// robot server
 	r := gin.Default()

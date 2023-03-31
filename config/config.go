@@ -1,6 +1,8 @@
 package config
 
 import (
+	"fmt"
+
 	"github.com/YasyaKarasu/feishuapi"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -17,6 +19,19 @@ type Config struct {
 	TemplateSpace struct {
 		SpaceID   string
 		NodeToken string
+	}
+	Mysql struct {
+		Host     string
+		Port     int
+		User     string
+		Password string
+		DBname   string
+	}
+	Redis struct {
+		Host     string
+		Port     int
+		Password string
+		DB       int
 	}
 }
 
@@ -39,4 +54,14 @@ func ReadConfig() {
 
 func SetupFeishuApiClient(cli *feishuapi.AppClient) {
 	cli.Conf = C.Feishu
+}
+
+func GetDatabaseLoginInfo() string {
+	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+		C.Mysql.User,
+		C.Mysql.Password,
+		C.Mysql.Host,
+		C.Mysql.Port,
+		C.Mysql.DBname,
+	)
 }

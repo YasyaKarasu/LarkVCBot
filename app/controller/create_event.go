@@ -9,7 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func createEvent(messageevent *chat.MessageEvent, args ...interface{}) {
+func createEvent(messageevent *chat.MessageEvent, args ...any) {
 	t, _ := time.ParseInLocation("2006-01-02 15:04:05", "2023-03-16 17:30:00", time.Local)
 
 	calendar := global.FeishuClient.CalendarCreate(feishuapi.DefaultCalendarCreateRequest().

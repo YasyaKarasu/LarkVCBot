@@ -8,7 +8,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func StatusDispatcher(messageevent *chat.MessageEvent, args ...interface{}) {
+func StatusDispatcher(messageevent *chat.MessageEvent, args ...any) {
 	switch GroupAwatingStatus[messageevent.Message.Chat_id] {
 	case Free:
 		logrus.Error("Group message failed to find event handler: ", messageevent.Message.Content)

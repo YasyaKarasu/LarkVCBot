@@ -4,11 +4,21 @@ import (
 	"LarkVCBot/app/chat"
 	"LarkVCBot/config"
 	"LarkVCBot/global"
+	"LarkVCBot/model"
 
 	"github.com/YasyaKarasu/feishuapi"
 )
 
-func initialize(event *chat.MessageEvent, args ...interface{}) {
+func initialize(event *chat.MessageEvent, args ...any) {
+	groupSpace, _ := model.QueryGroupSpaceByGroupChatID(event.Message.Chat_id)
+	if groupSpace != nil {
+		global.FeishuClient.MessageSend(
+			feishuapi.GroupChatId,
+			event.Message.Chat_id,
+			feishuapi.Text,
+			"此群已初始化，知识空间为：https://xn4zlkzg4p.feishu.cn/wiki/space/"+groupSpace.SpaceID,
+		)
+	}
 	global.FeishuClient.MessageSend(
 		feishuapi.GroupChatId,
 		event.Message.Chat_id,
