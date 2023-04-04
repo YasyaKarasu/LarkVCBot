@@ -60,7 +60,6 @@ func recursivelyFindBitable(spaceId string, nodeToken string, title string) stri
 func FindTableInBitable(AppToken string) string {
 	tables := global.FeishuClient.DocumentGetAllTables(AppToken)
 	return tables[0].TableId
-	return ""
 }
 
 func createVCRecordNodes(messageevent *chat.MessageEvent) {
