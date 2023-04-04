@@ -6,6 +6,7 @@ import (
 	"LarkVCBot/global"
 	"LarkVCBot/model"
 	"errors"
+	"fmt"
 
 	"github.com/YasyaKarasu/feishuapi"
 	"gorm.io/gorm"
@@ -14,11 +15,35 @@ import (
 func initialize(event *chat.MessageEvent, args ...any) {
 	groupSpace, err := model.QueryGroupSpaceByGroupChatID(event.Message.Chat_id)
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
+		card, _ := feishuapi.NewMessageCard().
+			WithConfig(
+				feishuapi.NewMessageCardConfig().
+					WithEnableForward(true).
+					WithUpdateMulti(true).
+					Build(),
+			).
+			WithHeader(
+				feishuapi.NewMessageCardHeader().
+					WithTemplate(feishuapi.TemplateRed).
+					WithTitle(feishuapi.NewMessageCardPlainText().
+						WithContent("重复定义").
+						Build(),
+					).
+					Build(),
+			).
+			WithElements([]feishuapi.MessageCardElement{
+				feishuapi.NewMessageCardLarkMarkdown().
+					WithContent(fmt.Sprintf(
+						"此群已初始化，[点击此处](%s)打开群知识空间",
+						"https://xn4zlkzg4p.feishu.cn/wiki/space/"+groupSpace.SpaceID,
+					)).
+					Build(),
+			}).Build().String()
 		global.FeishuClient.MessageSend(
 			feishuapi.GroupChatId,
 			event.Message.Chat_id,
-			feishuapi.Text,
-			"此群已初始化，知识空间为：https://xn4zlkzg4p.feishu.cn/wiki/space/"+groupSpace.SpaceID,
+			feishuapi.Interactive,
+			card,
 		)
 		return
 	}
