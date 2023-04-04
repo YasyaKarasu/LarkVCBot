@@ -5,6 +5,7 @@ import (
 	"LarkVCBot/config"
 	"LarkVCBot/global"
 	"LarkVCBot/model"
+	"LarkVCBot/utils"
 
 	"github.com/YasyaKarasu/feishuapi"
 	"github.com/sirupsen/logrus"
@@ -111,18 +112,26 @@ func createVCRecordNodes(messageevent *chat.MessageEvent) {
 		}
 		global.FeishuClient.CalendarSubscribeByBot(calendar.Id)
 
-		global.FeishuClient.MessageSend(
-			feishuapi.GroupChatId,
-			messageevent.Message.Chat_id,
-			feishuapi.Text,
+		card := utils.DefaultMarkdownMessageCardSuccess(
+			"🟢 初始化成功",
 			"会议文档初始化成功",
 		)
-	} else {
 		global.FeishuClient.MessageSend(
 			feishuapi.GroupChatId,
 			messageevent.Message.Chat_id,
-			feishuapi.Text,
+			feishuapi.Interactive,
+			card,
+		)
+	} else {
+		card := utils.DefaultMarkdownMessageCardError(
+			"❌ 初始化失败",
 			"会议文档初始化失败",
+		)
+		global.FeishuClient.MessageSend(
+			feishuapi.GroupChatId,
+			messageevent.Message.Chat_id,
+			feishuapi.Interactive,
+			card,
 		)
 	}
 }

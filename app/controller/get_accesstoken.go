@@ -2,6 +2,7 @@ package controller
 
 import (
 	"LarkVCBot/global"
+	"LarkVCBot/utils"
 	"errors"
 	"net/http"
 
@@ -33,7 +34,11 @@ func GetUserAccessToken(c *gin.Context) {
 	}).Info("get user access token")
 
 	chatId := c.Query("state")
-	global.FeishuClient.MessageSend(feishuapi.GroupChatId, chatId, feishuapi.Text, "请输入知识库ID（获取方式：飞书云文档-知识库-知识空间设置-链接最后的数字）。")
+	card := utils.DefaultMarkdownMessageCardInfo(
+		"🔵 操作提示",
+		"请输入知识库ID（获取方式：飞书云文档-知识库-知识空间设置-链接最后的数字）。",
+	)
+	global.FeishuClient.MessageSend(feishuapi.GroupChatId, chatId, feishuapi.Interactive, card)
 	GroupAwatingStatus[chatId] = Waiting4URL
 
 	c.Header("Content-Type", "text/html; charset=utf-8")

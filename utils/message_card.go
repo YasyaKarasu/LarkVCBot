@@ -32,6 +32,10 @@ func DefaultMarkdownMessageCardInfo(title string, content string) string {
 	return DefaultMarkdownMessageCard(feishuapi.TemplateBlue, title, content)
 }
 
+func DefaultMarkdownMessageCardSuccess(title string, content string) string {
+	return DefaultMarkdownMessageCard(feishuapi.TemplateGreen, title, content)
+}
+
 func DefaultMarkdownMessageCardWarn(title string, content string) string {
 	return DefaultMarkdownMessageCard(feishuapi.TemplateOrange, title, content)
 }
