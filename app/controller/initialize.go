@@ -65,7 +65,11 @@ func initialize(event *chat.MessageEvent, args ...any) {
 				WithActions([]feishuapi.MessageCardActionElement{
 					feishuapi.NewMessageCardButton().
 						WithType(feishuapi.TypePrimary).
-						WithText(feishuapi.NewMessageCardPlainText().WithContent("点击进行鉴权").Build()).
+						WithText(
+							feishuapi.NewMessageCardPlainText().
+								WithContent("点击进行鉴权").
+								Build(),
+						).
 						WithURL(config.C.Url.Url4AccessToken + "&state=" + event.Message.Chat_id).
 						Build(),
 				}),
