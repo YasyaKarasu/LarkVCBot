@@ -24,9 +24,9 @@ func initialize(event *chat.MessageEvent, args ...any) {
 			).
 			WithHeader(
 				feishuapi.NewMessageCardHeader().
-					WithTemplate(feishuapi.TemplateRed).
+					WithTemplate(feishuapi.TemplateOrange).
 					WithTitle(feishuapi.NewMessageCardPlainText().
-						WithContent("重复定义").
+						WithContent("⚠️ 重复定义").
 						Build(),
 					).
 					Build(),
