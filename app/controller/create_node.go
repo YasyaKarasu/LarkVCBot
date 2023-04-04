@@ -64,6 +64,17 @@ func FindTableInBitable(AppToken string) string {
 }
 
 func createVCRecordNodes(messageevent *chat.MessageEvent) {
+	card := utils.DefaultMarkdownMessageCardInfo(
+		"⚙️ 操作中...",
+		"正在初始化知识空间，请稍等...",
+	)
+	mid, _ := global.FeishuClient.MessageSend(
+		feishuapi.GroupChatId,
+		messageevent.Message.Chat_id,
+		feishuapi.Interactive,
+		card,
+	)
+
 	spaceId := messageevent.Message.Content
 	botId := global.FeishuClient.RobotGetInfo().OpenId
 	global.FeishuClient.KnowledgeSpaceAddBotsAsAdmin(
@@ -116,10 +127,8 @@ func createVCRecordNodes(messageevent *chat.MessageEvent) {
 			"🟢 初始化成功",
 			"会议文档初始化成功",
 		)
-		global.FeishuClient.MessageSend(
-			feishuapi.GroupChatId,
-			messageevent.Message.Chat_id,
-			feishuapi.Interactive,
+		global.FeishuClient.UpdateMessage(
+			mid,
 			card,
 		)
 	} else {
@@ -127,10 +136,8 @@ func createVCRecordNodes(messageevent *chat.MessageEvent) {
 			"❌ 初始化失败",
 			"会议文档初始化失败",
 		)
-		global.FeishuClient.MessageSend(
-			feishuapi.GroupChatId,
-			messageevent.Message.Chat_id,
-			feishuapi.Interactive,
+		global.FeishuClient.UpdateMessage(
+			mid,
 			card,
 		)
 	}
