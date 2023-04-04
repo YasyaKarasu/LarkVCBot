@@ -22,7 +22,7 @@ func StatusDispatcher(messageevent *chat.MessageEvent, args ...any) {
 			).
 			WithHeader(
 				feishuapi.NewMessageCardHeader().
-					WithTemplate(feishuapi.TemplateRed).
+					WithTemplate(feishuapi.TemplateOrange).
 					WithTitle(feishuapi.NewMessageCardPlainText().
 						WithContent("⚠️ 无效关键词").
 						Build(),
