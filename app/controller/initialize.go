@@ -32,7 +32,7 @@ func initialize(event *chat.MessageEvent, args ...any) {
 					Build(),
 			).
 			WithElements([]feishuapi.MessageCardElement{
-				feishuapi.NewMessageCardLarkMarkdown().
+				feishuapi.NewMessageCardMarkdown().
 					WithContent(fmt.Sprintf(
 						"此群已初始化，[点击此处](%s)打开群知识空间",
 						"https://xn4zlkzg4p.feishu.cn/wiki/space/"+groupSpace.SpaceID,
