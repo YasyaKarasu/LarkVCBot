@@ -59,7 +59,7 @@ func CheckEvents() {
 
 				timer := cron.New(cron.WithSeconds())
 				timer.AddJob(
-					time.Unix(0, int64(startTime)).Format("05 04 15 02 01")+" *",
+					time.Unix(0, int64(startTime)-5*60*1000).Format("05 04 15 02 01")+" *",
 					UpdateEventJob{calendar.CalendarID, event.Id},
 				)
 				timer.Start()
