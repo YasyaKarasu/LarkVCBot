@@ -62,6 +62,11 @@ func CheckEvents() {
 					time.Unix(int64(startTime)/1000-5*60, 0).Format("05 04 15 02 01")+" *",
 					UpdateBeforeEventJob{calendar.CalendarID, event.Id},
 				)
+				endTime, _ := strconv.ParseUint(event.EventInfo.EndTime.Timestamp, 10, 64)
+				timer.AddJob(
+					time.Unix(int64(endTime)/1000, 0).Format("05 04 15 02 01")+" *",
+					UpdateAfterEventJob{calendar.CalendarID, event.Id},
+				)
 				timer.Start()
 			}
 		}

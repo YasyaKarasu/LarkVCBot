@@ -127,7 +127,7 @@ func createVCRecordNodes(messageevent *chat.MessageEvent) {
 			"🟢 初始化成功",
 			"会议文档初始化成功",
 		)
-		global.FeishuClient.UpdateMessage(
+		global.FeishuClient.MessageUpdate(
 			mid,
 			card,
 		)
@@ -136,7 +136,7 @@ func createVCRecordNodes(messageevent *chat.MessageEvent) {
 			"❌ 初始化失败",
 			"会议文档初始化失败",
 		)
-		global.FeishuClient.UpdateMessage(
+		global.FeishuClient.MessageUpdate(
 			mid,
 			card,
 		)

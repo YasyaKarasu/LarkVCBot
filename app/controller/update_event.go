@@ -4,6 +4,7 @@ import (
 	"LarkVCBot/global"
 	"LarkVCBot/model"
 	"strconv"
+	"time"
 
 	"github.com/YasyaKarasu/feishuapi"
 )
@@ -31,16 +32,18 @@ func (job UpdateBeforeEventJob) Run() {
 		event.Id,
 		feishuapi.OpenId,
 	)
-	user_ids := make([]feishuapi.FieldStaff, 0)
-	absent_ids := make([]feishuapi.FieldStaff, 0)
+	attendStaffs := make([]feishuapi.FieldStaff, 0)
+	absentStaffs := make([]feishuapi.FieldStaff, 0)
+	absentIDs := make([]string, 0)
 	for _, attendee := range attendees {
-		user_ids = append(user_ids, feishuapi.FieldStaff{
+		attendStaffs = append(attendStaffs, feishuapi.FieldStaff{
 			ID: attendee.UserId,
 		})
 		if attendee.RSVPStatus == feishuapi.Decline {
-			absent_ids = append(absent_ids, feishuapi.FieldStaff{
+			absentStaffs = append(absentStaffs, feishuapi.FieldStaff{
 				ID: attendee.UserId,
 			})
+			absentIDs = append(absentIDs, attendee.UserId)
 		}
 	}
 
@@ -53,12 +56,104 @@ func (job UpdateBeforeEventJob) Run() {
 			"备注":       event.EventInfo.Description,
 			"日期":       startTime,
 			"主持人":      fields["主持人"],
-			"应到人员":     user_ids,
-			"请假人员":     absent_ids,
+			"应到人员":     attendStaffs,
+			"请假人员":     absentStaffs,
 			"状态":       fields["状态"],
 			"会议记录文档链接": fields["会议记录文档链接"],
 			"妙记链接":     fields["妙记链接"],
 		},
+	)
+
+	absentInfo := global.FeishuClient.EmployeeGetInfo(feishuapi.OpenId, absentIDs)
+	var absentNames string
+	for _, info := range absentInfo {
+		absentNames += info.Name + "\n"
+	}
+	card, _ := feishuapi.NewMessageCard().
+		WithConfig(
+			feishuapi.NewMessageCardConfig().
+				WithEnableForward(true).
+				WithUpdateMulti(true).
+				Build(),
+		).
+		WithHeader(
+			feishuapi.NewMessageCardHeader().
+				WithTemplate(feishuapi.TemplateBlue).
+				WithTitle(
+					feishuapi.NewMessageCardPlainText().
+						WithContent("📊 会议请假情况统计").
+						Build(),
+				).Build(),
+		).
+		WithElements([]feishuapi.MessageCardElement{
+			feishuapi.NewMessageCardDiv().
+				WithFields([]*feishuapi.MessageCardField{
+					feishuapi.NewMessageCardField().
+						WithIsShort(true).
+						WithText(
+							feishuapi.NewMessageCardLarkMarkdown().
+								WithContent("**会议名：**\n" + event.EventInfo.Summary).
+								Build(),
+						).
+						Build(),
+					feishuapi.NewMessageCardField().
+						WithIsShort(true).
+						WithText(
+							feishuapi.NewMessageCardLarkMarkdown().
+								WithContent("**会议时间：**\n" +
+									time.Unix(int64(startTime)/1000, 0).Format("2006/01/02 15:04 Mon")).
+								Build(),
+						).
+						Build(),
+				}).
+				Build(),
+			feishuapi.NewMessageCardDiv().
+				WithFields([]*feishuapi.MessageCardField{
+					feishuapi.NewMessageCardField().
+						WithIsShort(true).
+						WithText(
+							feishuapi.NewMessageCardLarkMarkdown().
+								WithContent("**应到人数：**\n" +
+									strconv.FormatInt(int64(len(attendees)), 10)).
+								Build(),
+						).
+						Build(),
+					feishuapi.NewMessageCardField().
+						WithIsShort(true).
+						WithText(
+							feishuapi.NewMessageCardLarkMarkdown().
+								WithContent("**请假人数：**\n" +
+									strconv.FormatInt(int64(len(absentIDs)), 10)).
+								Build(),
+						).
+						Build(),
+				}).
+				Build(),
+			feishuapi.NewMessageCardDiv().
+				WithFields([]*feishuapi.MessageCardField{
+					feishuapi.NewMessageCardField().
+						WithIsShort(true).
+						WithText(
+							feishuapi.NewMessageCardLarkMarkdown().
+								WithContent("**预期参会人数：**\n" +
+									strconv.FormatInt(int64(len(attendees)-len(absentIDs)), 10)).
+								Build(),
+						).Build(),
+					feishuapi.NewMessageCardField().
+						WithIsShort(true).
+						WithText(
+							feishuapi.NewMessageCardLarkMarkdown().
+								WithContent("**请假人：**\n" + absentNames).
+								Build(),
+						).Build(),
+				}).
+				Build(),
+		}).Build().String()
+	global.FeishuClient.MessageSend(
+		feishuapi.UserOpenId,
+		fields["主持人"].(feishuapi.FieldStaff).ID,
+		feishuapi.Interactive,
+		card,
 	)
 }
 
