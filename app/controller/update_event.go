@@ -64,12 +64,7 @@ func (job UpdateBeforeEventJob) Run() {
 		},
 	)
 
-	absentInfo := global.FeishuClient.EmployeeGetInfo(feishuapi.OpenId, absentIDs)
-	var absentNames string
-	for _, info := range absentInfo {
-		absentNames += info.Name + "\n"
-	}
-	card, _ := feishuapi.NewMessageCard().
+	card := feishuapi.NewMessageCard().
 		WithConfig(
 			feishuapi.NewMessageCardConfig().
 				WithEnableForward(true).
@@ -139,22 +134,44 @@ func (job UpdateBeforeEventJob) Run() {
 									strconv.FormatInt(int64(len(attendees)-len(absentIDs)), 10)).
 								Build(),
 						).Build(),
-					feishuapi.NewMessageCardField().
-						WithIsShort(true).
-						WithText(
-							feishuapi.NewMessageCardLarkMarkdown().
-								WithContent("**请假人：**\n" + absentNames).
-								Build(),
-						).Build(),
 				}).
 				Build(),
-		}).Build().String()
-	global.FeishuClient.MessageSend(
-		feishuapi.UserOpenId,
-		fields["主持人"].(feishuapi.FieldStaff).ID,
-		feishuapi.Interactive,
-		card,
-	)
+		}).Build()
+
+	if len(absentIDs) != 0 {
+		absentNames := ""
+		absentInfo := global.FeishuClient.EmployeeGetInfo(feishuapi.OpenId, absentIDs)
+
+		for _, info := range absentInfo {
+			absentNames += info.Name + "\n"
+		}
+
+		card.Elements[2].(*feishuapi.MessageCardDiv).Fields = append(
+			card.Elements[2].(*feishuapi.MessageCardDiv).Fields,
+			feishuapi.NewMessageCardField().
+				WithIsShort(true).
+				WithText(
+					feishuapi.NewMessageCardLarkMarkdown().
+						WithContent("**请假人：**\n"+absentNames).
+						Build(),
+				).Build(),
+		)
+	}
+
+	cardString, _ := card.String()
+	if fields["主持人"] != nil {
+		holders := fields["主持人"].([]any)
+		for _, holder := range holders {
+			info := holder.(map[string]any)
+			holderId := info["id"].(string)
+			global.FeishuClient.MessageSend(
+				feishuapi.UserOpenId,
+				holderId,
+				feishuapi.Interactive,
+				cardString,
+			)
+		}
+	}
 }
 
 type UpdateAfterEventJob struct {
