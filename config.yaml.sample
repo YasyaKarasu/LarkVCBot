@@ -12,7 +12,8 @@ url:
 
 templateSpace:
   spaceID:
-  nodeToken:
+  initNodeToken:
+  minuteNodeToken:
 
 mysql:
   host:

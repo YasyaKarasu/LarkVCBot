@@ -6,6 +6,7 @@ type GroupSpace struct {
 	SpaceID         string `gorm:"not null;size:30"`
 	ScheduleToken   string `gorm:"not null;size:35"`
 	ScheduleTableID string `gorm:"not null:size:25"`
+	MinutesToken    string `gorm:"not null;size:35"`
 	OverallToken    string `gorm:"not null;size:35"`
 	OverallTableID  string `gorm:"not null;size:25"`
 	PersonalToken   string `gorm:"not null;size:35"`

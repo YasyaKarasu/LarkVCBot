@@ -57,6 +57,23 @@ func CheckEvents() {
 				)
 				model.SetSession(event.Id, string(struct2bytes(record)))
 
+				if time.Unix(int64(startTime)/1000, 0).Day() != time.Now().Day() {
+					timer := cron.New(cron.WithSeconds())
+					timer.AddFunc("* * * "+time.Unix(int64(startTime)/1000, 0).Add(-time.Hour*24).Format("02 01")+" *", func() {
+						CreateMinuteJob{
+							calendar.CalendarID,
+							event.Id,
+						}.Run()
+						timer.Stop()
+					})
+					timer.Start()
+				} else {
+					CreateMinuteJob{
+						calendar.CalendarID,
+						event.Id,
+					}.Run()
+				}
+
 				timer := cron.New(cron.WithSeconds())
 				timer.AddJob(
 					time.Unix(int64(startTime)/1000-5*60, 0).Format("05 04 15 02 01")+" *",

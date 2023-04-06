@@ -18,6 +18,12 @@ func QueryGroupCalendarByGroupChatID(groupChatID string) (*GroupCalendar, error)
 	return &result, err.Error
 }
 
+func QueryGroupCalendarByCalendarID(calendarID string) (*GroupCalendar, error) {
+	var result GroupCalendar
+	err := gormDb.Where(&GroupCalendar{CalendarID: calendarID}).First(&result)
+	return &result, err.Error
+}
+
 func QueryAllGoupCalendars() ([]GroupCalendar, error) {
 	var result []GroupCalendar
 	err := gormDb.Find(&result)

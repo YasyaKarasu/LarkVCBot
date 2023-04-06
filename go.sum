@@ -78,6 +78,10 @@ github.com/YasyaKarasu/feishuapi v1.3.0 h1:ObpiCBbttQYtZpAK3GlV4GfgTHHQCEaVRwFYd
 github.com/YasyaKarasu/feishuapi v1.3.0/go.mod h1:MZ2g4WAwDThmFpkFelHMbUaTLoS1/E5OfWWIhMOHYi8=
 github.com/YasyaKarasu/feishuapi v1.3.1 h1:WE7bnAHP5gLftjnERNJiIhxZ8fdBLjKfpt4EC84NPzQ=
 github.com/YasyaKarasu/feishuapi v1.3.1/go.mod h1:MZ2g4WAwDThmFpkFelHMbUaTLoS1/E5OfWWIhMOHYi8=
+github.com/YasyaKarasu/feishuapi v1.3.2 h1:soErRMbJah7dxMtanGK9jI7IVn5dsExczLS/LVEMP88=
+github.com/YasyaKarasu/feishuapi v1.3.2/go.mod h1:MZ2g4WAwDThmFpkFelHMbUaTLoS1/E5OfWWIhMOHYi8=
+github.com/YasyaKarasu/feishuapi v1.3.3 h1:/+cFCyjMe2rjxZ480tZY0MC50jD5VoyxE0Rh3SbpK30=
+github.com/YasyaKarasu/feishuapi v1.3.3/go.mod h1:MZ2g4WAwDThmFpkFelHMbUaTLoS1/E5OfWWIhMOHYi8=
 github.com/agiledragon/gomonkey/v2 v2.3.1/go.mod h1:ap1AmDzcVOAz1YpeJ3TCzIgstoaWLA6jbbgxfB4w2iY=
 github.com/bsm/ginkgo/v2 v2.5.0 h1:aOAnND1T40wEdAtkGSkvSICWeQ8L3UASX7YVCqQx+eQ=
 github.com/bsm/gomega v1.20.0 h1:JhAwLmtRzXFTx2AkALSLa8ijZafntmhSoU63Ok18Uq8=

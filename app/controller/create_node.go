@@ -83,8 +83,9 @@ func createVCRecordNodes(messageevent *chat.MessageEvent) {
 		"Bearer "+userAccessToken[messageevent.Sender.Sender_id.Open_id],
 	)
 
-	if nodeToken := recursivelyCopyNode(config.C.TemplateSpace.SpaceID, config.C.TemplateSpace.NodeToken, spaceId, ""); nodeToken != "" {
+	if nodeToken := recursivelyCopyNode(config.C.TemplateSpace.SpaceID, config.C.TemplateSpace.InitNodeToken, spaceId, ""); nodeToken != "" {
 		scheduleToken := recursivelyFindBitable(spaceId, nodeToken, "会议排期")
+		minutesToken := recursivelyFindBitable(spaceId, nodeToken, "会议记录")
 		overallToken := recursivelyFindBitable(spaceId, nodeToken, "总体反馈")
 		personalToken := recursivelyFindBitable(spaceId, nodeToken, "个人反馈")
 		_, err := model.CreateGroupSpace(&model.GroupSpace{
@@ -92,6 +93,7 @@ func createVCRecordNodes(messageevent *chat.MessageEvent) {
 			SpaceID:         spaceId,
 			ScheduleToken:   scheduleToken,
 			ScheduleTableID: FindTableInBitable(scheduleToken),
+			MinutesToken:    minutesToken,
 			OverallToken:    overallToken,
 			OverallTableID:  FindTableInBitable(overallToken),
 			PersonalToken:   personalToken,

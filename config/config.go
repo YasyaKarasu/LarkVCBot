@@ -17,8 +17,9 @@ type Config struct {
 		Url4AccessToken string
 	}
 	TemplateSpace struct {
-		SpaceID   string
-		NodeToken string
+		SpaceID         string
+		InitNodeToken   string
+		MinuteNodeToken string
 	}
 	Mysql struct {
 		Host     string
