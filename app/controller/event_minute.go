@@ -30,6 +30,9 @@ func (job CreateMinuteJob) Run() {
 	}
 	event := global.FeishuClient.CalendarEventQuery(job.CalendarID, job.EventID)
 	startTime, _ := strconv.ParseUint(event.EventInfo.StartTime.Timestamp, 10, 64)
+	logrus.Info(startTime)
+	logrus.Info(time.Unix(int64(startTime)/1000, 0))
+	logrus.Info(time.Unix(int64(startTime)/1000, 0).Format("1.2"))
 	title := time.Unix(int64(startTime)/1000, 0).Format("1.2") + " " + event.EventInfo.Summary
 	minuteNodeInfo := global.FeishuClient.KnowledgeSpaceCopyNode(
 		config.C.TemplateSpace.SpaceID,
@@ -43,6 +46,7 @@ func (job CreateMinuteJob) Run() {
 		feishuapi.OpenId,
 	)
 	textElement := feishuapi.TextElement{}
+	textElement.TextRun = blocks[0].Text.Elements[0].TextRun
 	textElement.TextRun.Content = &title
 	global.FeishuClient.DocumentUpdateBlock(
 		spaceInfo.MinutesToken,
