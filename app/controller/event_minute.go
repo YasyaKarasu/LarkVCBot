@@ -91,6 +91,13 @@ func (job CreateMinuteJob) Run() {
 		record.TableId,
 		record.RecordId,
 	).Fields
+	url := struct {
+		Text string `json:"text,omitempty"`
+		Link string `json:"link,omitempty"`
+	}{
+		Text: title,
+		Link: "https://xn4zlkzg4p.feishu.cn/wiki/" + minuteNodeInfo.NodeToken,
+	}
 	global.FeishuClient.DocumentUpdateRecord(
 		record.AppToken,
 		record.TableId,
@@ -103,7 +110,7 @@ func (job CreateMinuteJob) Run() {
 			"应到人员":     fields["应到人员"],
 			"请假人员":     fields["请假人员"],
 			"状态":       fields["状态"],
-			"会议记录文档链接": "https://xn4zlkzg4p.feishu.cn/wiki/" + minuteNodeInfo.NodeToken,
+			"会议记录文档链接": url,
 			"妙记链接":     fields["妙记链接"],
 		},
 	)
