@@ -86,7 +86,8 @@ func (job CreateMinuteJob) Run() {
 	info := "点击跳转会议排期，更新会议状态"
 	doc_type := 22
 	url_ := "https://xn4zlkzg4p.feishu.cn/wiki/" + spaceInfo.ScheduleToken
-	blockCreate := feishuapi.BlockCreate{
+	blockCreate := []feishuapi.BlockCreate{{
+		BlockType: 2,
 		BlockText: &feishuapi.BlockText{
 			Style: nil,
 			Elements: []feishuapi.TextElement{
@@ -125,12 +126,13 @@ func (job CreateMinuteJob) Run() {
 				},
 			},
 		},
+	},
 	}
 	global.FeishuClient.DocumentCreateBlock(
 		minuteNodeInfo.ObjToken,
 		blocks[0].BlockId,
 		feishuapi.OpenId,
-		&blockCreate,
+		blockCreate,
 		-1,
 	)
 
