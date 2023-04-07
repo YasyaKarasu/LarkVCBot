@@ -84,49 +84,50 @@ func (job CreateMinuteJob) Run() {
 	)
 
 	info := "点击跳转会议排期，更新会议状态"
-	doc_type := 22
+	doc_type := 16
 	url_ := "https://xn4zlkzg4p.feishu.cn/wiki/" + spaceInfo.ScheduleToken
-	blockCreate := []feishuapi.BlockCreate{{
-		BlockType: 2,
-		BlockText: &feishuapi.BlockText{
-			Style: nil,
-			Elements: []feishuapi.TextElement{
-				{
-					TextRun: &struct {
-						Content          *string `json:"content,omitempty"`
-						TextElementStyle *struct {
-							Bold            *bool `json:"bold,omitempty"`
-							Italic          *bool `json:"italic,omitempty"`
-							Strikethrough   *bool `json:"strikethrough,omitempty"`
-							Underline       *bool `json:"underline,omitempty"`
-							InlineCode      *bool `json:"inline_code,omitempty"`
-							BackgroundColor *int  `json:"background_color,omitempty"`
-							TextColor       *int  `json:"text_color,omitempty"`
-							Link            *struct {
-								URL *string `json:"url,omitempty"`
-							} `json:"link,omitempty"`
-						} `json:"text_element_style,omitempty"`
-					}{
-						Content:          &info,
-						TextElementStyle: nil,
+	blockCreate := []feishuapi.BlockCreate{
+		{
+			BlockType: 2,
+			BlockText: &feishuapi.BlockText{
+				Style: nil,
+				Elements: []feishuapi.TextElement{
+					{
+						TextRun: &struct {
+							Content          *string `json:"content,omitempty"`
+							TextElementStyle *struct {
+								Bold            *bool `json:"bold,omitempty"`
+								Italic          *bool `json:"italic,omitempty"`
+								Strikethrough   *bool `json:"strikethrough,omitempty"`
+								Underline       *bool `json:"underline,omitempty"`
+								InlineCode      *bool `json:"inline_code,omitempty"`
+								BackgroundColor *int  `json:"background_color,omitempty"`
+								TextColor       *int  `json:"text_color,omitempty"`
+								Link            *struct {
+									URL *string `json:"url,omitempty"`
+								} `json:"link,omitempty"`
+							} `json:"text_element_style,omitempty"`
+						}{
+							Content:          &info,
+							TextElementStyle: nil,
+						},
 					},
-				},
-				{
-					MentionDoc: &struct {
-						Token   *string `json:"token,omitempty"`
-						ObjType *int    `json:"obj_type,omitempty"`
-						URL     *string `json:"url,omitempty"`
-						Title   *string `json:"title,omitempty"`
-					}{
-						Token:   &spaceInfo.ScheduleToken,
-						ObjType: &doc_type,
-						URL:     &url_,
-						Title:   nil,
+					{
+						MentionDoc: &struct {
+							Token   *string `json:"token,omitempty"`
+							ObjType *int    `json:"obj_type,omitempty"`
+							URL     *string `json:"url,omitempty"`
+							Title   *string `json:"title,omitempty"`
+						}{
+							Token:   &spaceInfo.ScheduleToken,
+							ObjType: &doc_type,
+							URL:     &url_,
+							Title:   nil,
+						},
 					},
 				},
 			},
 		},
-	},
 	}
 	global.FeishuClient.DocumentCreateBlock(
 		minuteNodeInfo.ObjToken,
