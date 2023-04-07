@@ -28,12 +28,10 @@ func (job CreateMinuteJob) Run() {
 		logrus.Error(err)
 		return
 	}
+	logrus.Info(*spaceInfo)
 	event := global.FeishuClient.CalendarEventQuery(job.CalendarID, job.EventID)
 	startTime, _ := strconv.ParseUint(event.EventInfo.StartTime.Timestamp, 10, 64)
-	logrus.Info(startTime)
-	logrus.Info(time.Unix(int64(startTime)/1000, 0))
-	logrus.Info(time.Unix(int64(startTime)/1000, 0).Format("1.2"))
-	title := time.Unix(int64(startTime)/1000, 0).Format("1.2") + " " + event.EventInfo.Summary
+	title := time.Unix(int64(startTime), 0).Format("1.2") + " " + event.EventInfo.Summary
 	minuteNodeInfo := global.FeishuClient.KnowledgeSpaceCopyNode(
 		config.C.TemplateSpace.SpaceID,
 		config.C.TemplateSpace.MinuteNodeToken,
