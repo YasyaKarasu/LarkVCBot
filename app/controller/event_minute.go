@@ -28,7 +28,6 @@ func (job CreateMinuteJob) Run() {
 		logrus.Error(err)
 		return
 	}
-	logrus.Info(*spaceInfo)
 	event := global.FeishuClient.CalendarEventQuery(job.CalendarID, job.EventID)
 	startTime, _ := strconv.ParseUint(event.EventInfo.StartTime.Timestamp, 10, 64)
 	title := time.Unix(int64(startTime), 0).Format("1.2") + " " + event.EventInfo.Summary
@@ -42,19 +41,6 @@ func (job CreateMinuteJob) Run() {
 	blocks := global.FeishuClient.DocumentGetAllBlocks(
 		minuteNodeInfo.ObjToken,
 		feishuapi.OpenId,
-	)
-	textElement := feishuapi.TextElement{}
-	textElement.TextRun = blocks[0].Text.Elements[0].TextRun
-	textElement.TextRun.Content = &title
-	global.FeishuClient.DocumentUpdateBlock(
-		spaceInfo.MinutesToken,
-		blocks[0].BlockId,
-		feishuapi.OpenId,
-		&feishuapi.BlockUpdate{
-			UpdateTextElements: &feishuapi.BlockTextElementsUpdate{Elements: []feishuapi.TextElement{
-				textElement,
-			}},
-		},
 	)
 	textElements := blocks[2].Text.Elements
 	if event.EventInfo.Description == "" {
