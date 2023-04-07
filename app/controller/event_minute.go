@@ -30,7 +30,7 @@ func (job CreateMinuteJob) Run() {
 	}
 	event := global.FeishuClient.CalendarEventQuery(job.CalendarID, job.EventID)
 	startTime, _ := strconv.ParseUint(event.EventInfo.StartTime.Timestamp, 10, 64)
-	title := time.Unix(int64(startTime), 0).Format("1.2") + " " + event.EventInfo.Summary
+	title := time.Unix(int64(startTime), 0).Format("06.1.2") + " " + event.EventInfo.Summary
 	minuteNodeInfo := global.FeishuClient.KnowledgeSpaceCopyNode(
 		config.C.TemplateSpace.SpaceID,
 		config.C.TemplateSpace.MinuteNodeToken,
@@ -81,6 +81,57 @@ func (job CreateMinuteJob) Run() {
 		&feishuapi.BlockUpdate{
 			UpdateTextElements: &feishuapi.BlockTextElementsUpdate{Elements: textElements},
 		},
+	)
+
+	info := "点击跳转会议排期，更新会议状态"
+	doc_type := 22
+	url_ := "https://xn4zlkzg4p.feishu.cn/wiki/" + spaceInfo.ScheduleToken
+	blockCreate := feishuapi.BlockCreate{
+		BlockText: &feishuapi.BlockText{
+			Style: nil,
+			Elements: []feishuapi.TextElement{
+				{
+					TextRun: &struct {
+						Content          *string `json:"content,omitempty"`
+						TextElementStyle *struct {
+							Bold            *bool `json:"bold,omitempty"`
+							Italic          *bool `json:"italic,omitempty"`
+							Strikethrough   *bool `json:"strikethrough,omitempty"`
+							Underline       *bool `json:"underline,omitempty"`
+							InlineCode      *bool `json:"inline_code,omitempty"`
+							BackgroundColor *int  `json:"background_color,omitempty"`
+							TextColor       *int  `json:"text_color,omitempty"`
+							Link            *struct {
+								URL *string `json:"url,omitempty"`
+							} `json:"link,omitempty"`
+						} `json:"text_element_style,omitempty"`
+					}{
+						Content:          &info,
+						TextElementStyle: nil,
+					},
+				},
+				{
+					MentionDoc: &struct {
+						Token   *string `json:"token,omitempty"`
+						ObjType *int    `json:"obj_type,omitempty"`
+						URL     *string `json:"url,omitempty"`
+						Title   *string `json:"title,omitempty"`
+					}{
+						Token:   &spaceInfo.ScheduleToken,
+						ObjType: &doc_type,
+						URL:     &url_,
+						Title:   nil,
+					},
+				},
+			},
+		},
+	}
+	global.FeishuClient.DocumentCreateBlock(
+		minuteNodeInfo.ObjToken,
+		blocks[0].BlockId,
+		feishuapi.OpenId,
+		&blockCreate,
+		-1,
 	)
 
 	recordInfo := model.GetSessionString(job.EventID)

@@ -58,7 +58,7 @@ func (job UpdateBeforeEventJob) Run() {
 			"主持人":      fields["主持人"],
 			"应到人员":     attendStaffs,
 			"请假人员":     absentStaffs,
-			"状态":       fields["状态"],
+			"状态":       "进行中",
 			"会议记录文档链接": fields["会议记录文档链接"],
 			"妙记链接":     fields["妙记链接"],
 		},
