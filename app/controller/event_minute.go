@@ -49,7 +49,7 @@ func (job CreateMinuteJob) Run() {
 		textElements[2].TextRun.Content = &event.EventInfo.Description
 	}
 	global.FeishuClient.DocumentUpdateBlock(
-		spaceInfo.MinutesToken,
+		minuteNodeInfo.NodeToken,
 		blocks[2].BlockId,
 		feishuapi.OpenId,
 		&feishuapi.BlockUpdate{
@@ -75,7 +75,7 @@ func (job CreateMinuteJob) Run() {
 		})
 	}
 	global.FeishuClient.DocumentUpdateBlock(
-		spaceInfo.MinutesToken,
+		minuteNodeInfo.NodeToken,
 		blocks[3].BlockId,
 		feishuapi.OpenId,
 		&feishuapi.BlockUpdate{
