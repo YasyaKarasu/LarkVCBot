@@ -38,6 +38,26 @@ func recursivelyCopyNode(sourceSpaceId string, sourceParentNode string, targetSp
 	return copiedNodeParent.NodeToken
 }
 
+func recursivelyFindNode(spaceId string, nodeToken string, title string) string {
+	nodeInfo := global.FeishuClient.KnowledgeSpaceGetNodeInfo(nodeToken)
+	if nodeInfo.Title == title {
+		return nodeInfo.NodeToken
+	}
+	if !nodeInfo.HasChild {
+		return ""
+	}
+	nodes := global.FeishuClient.KnowledgeSpaceGetAllNodes(
+		spaceId,
+		nodeToken,
+	)
+	for _, value := range nodes {
+		if node := recursivelyFindNode(spaceId, value.NodeToken, title); node != "" {
+			return node
+		}
+	}
+	return ""
+}
+
 func recursivelyFindBitable(spaceId string, nodeToken string, title string) string {
 	nodeInfo := global.FeishuClient.KnowledgeSpaceGetNodeInfo(nodeToken)
 	if nodeInfo.Title == title {
@@ -85,7 +105,7 @@ func createVCRecordNodes(messageevent *chat.MessageEvent) {
 
 	if nodeToken := recursivelyCopyNode(config.C.TemplateSpace.SpaceID, config.C.TemplateSpace.InitNodeToken, spaceId, ""); nodeToken != "" {
 		scheduleToken := recursivelyFindBitable(spaceId, nodeToken, "会议排期")
-		minutesToken := recursivelyFindBitable(spaceId, nodeToken, "会议记录")
+		minutesToken := recursivelyFindNode(spaceId, nodeToken, "会议记录")
 		overallToken := recursivelyFindBitable(spaceId, nodeToken, "总体反馈")
 		personalToken := recursivelyFindBitable(spaceId, nodeToken, "个人反馈")
 		_, err := model.CreateGroupSpace(&model.GroupSpace{
