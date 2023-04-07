@@ -58,7 +58,7 @@ func (job UpdateBeforeEventJob) Run() {
 			"主持人":      fields["主持人"],
 			"应到人员":     attendStaffs,
 			"请假人员":     absentStaffs,
-			"状态":       "进行中",
+			"状态":       fields["状态"],
 			"会议记录文档链接": fields["会议记录文档链接"],
 			"妙记链接":     fields["妙记链接"],
 		},
@@ -172,6 +172,39 @@ func (job UpdateBeforeEventJob) Run() {
 			)
 		}
 	}
+}
+
+type UpdateAtEventJob struct {
+	CalendarID string
+	EventID    string
+}
+
+func (job UpdateAtEventJob) Run() {
+	recordInfo := model.GetSessionString(job.EventID)
+	var record feishuapi.RecordInfo
+	bytes2struct([]byte(recordInfo), &record)
+	fields := global.FeishuClient.DocumentGetRecordWithoutModifiedTime(
+		record.AppToken,
+		record.TableId,
+		record.RecordId,
+	).Fields
+
+	global.FeishuClient.DocumentUpdateRecord(
+		record.AppToken,
+		record.TableId,
+		record.RecordId,
+		map[string]any{
+			"标题":       fields["标题"],
+			"备注":       fields["备注"],
+			"日期":       fields["日期"],
+			"主持人":      fields["主持人"],
+			"应到人员":     fields["应到人员"],
+			"请假人员":     fields["请假人员"],
+			"状态":       "进行中",
+			"会议记录文档链接": fields["会议记录文档链接"],
+			"妙记链接":     fields["妙记链接"],
+		},
+	)
 }
 
 type UpdateAfterEventJob struct {

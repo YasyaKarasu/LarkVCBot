@@ -1,8 +1,12 @@
 package chat
 
 import (
+	"LarkVCBot/global"
+	"LarkVCBot/utils"
+	"fmt"
 	"strings"
 
+	"github.com/YasyaKarasu/feishuapi"
 	"github.com/sirupsen/logrus"
 )
 
@@ -27,6 +31,16 @@ func p2pTextMessage(messageevent *MessageEvent) {
 		return
 	} else {
 		logrus.Error("p2p message failed to find event handler: ", messageevent.Message.Content)
+		card := utils.DefaultMarkdownMessageCardWarn(
+			"⚠️ 无效关键词",
+			fmt.Sprintf("关键词 *%s* 未定义！", messageevent.Message.Content),
+		)
+		global.FeishuClient.MessageSend(
+			feishuapi.UserOpenId,
+			messageevent.Sender.Sender_id.Open_id,
+			feishuapi.Interactive,
+			card,
+		)
 		return
 	}
 }
