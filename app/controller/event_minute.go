@@ -85,7 +85,7 @@ func (job CreateMinuteJob) Run() {
 
 	info := "点击跳转会议排期，更新会议状态"
 	doc_type := 16
-	url_ := "https://xn4zlkzg4p.feishu.cn/wiki/" + spaceInfo.ScheduleToken
+	url_ := "https://xn4zlkzg4p.feishu.cn/wiki/" + spaceInfo.ScheduleNodeToken
 	blockCreate := []feishuapi.BlockCreate{
 		{
 			BlockType: 2,
@@ -119,7 +119,7 @@ func (job CreateMinuteJob) Run() {
 							URL     *string `json:"url,omitempty"`
 							Title   *string `json:"title,omitempty"`
 						}{
-							Token:   &spaceInfo.ScheduleToken,
+							Token:   &spaceInfo.ScheduleNodeToken,
 							ObjType: &doc_type,
 							URL:     &url_,
 							Title:   nil,

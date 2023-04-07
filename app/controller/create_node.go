@@ -104,20 +104,22 @@ func createVCRecordNodes(messageevent *chat.MessageEvent) {
 	)
 
 	if nodeToken := recursivelyCopyNode(config.C.TemplateSpace.SpaceID, config.C.TemplateSpace.InitNodeToken, spaceId, ""); nodeToken != "" {
+		scheduleNodeToken := recursivelyFindNode(spaceId, nodeToken, "会议排期")
 		scheduleToken := recursivelyFindBitable(spaceId, nodeToken, "会议排期")
 		minutesToken := recursivelyFindNode(spaceId, nodeToken, "会议记录")
 		overallToken := recursivelyFindBitable(spaceId, nodeToken, "总体反馈")
 		personalToken := recursivelyFindBitable(spaceId, nodeToken, "个人反馈")
 		_, err := model.CreateGroupSpace(&model.GroupSpace{
-			GroupChatID:     messageevent.Message.Chat_id,
-			SpaceID:         spaceId,
-			ScheduleToken:   scheduleToken,
-			ScheduleTableID: FindTableInBitable(scheduleToken),
-			MinutesToken:    minutesToken,
-			OverallToken:    overallToken,
-			OverallTableID:  FindTableInBitable(overallToken),
-			PersonalToken:   personalToken,
-			PersonalTableID: FindTableInBitable(personalToken),
+			GroupChatID:       messageevent.Message.Chat_id,
+			SpaceID:           spaceId,
+			ScheduleNodeToken: scheduleNodeToken,
+			ScheduleToken:     scheduleToken,
+			ScheduleTableID:   FindTableInBitable(scheduleToken),
+			MinutesToken:      minutesToken,
+			OverallToken:      overallToken,
+			OverallTableID:    FindTableInBitable(overallToken),
+			PersonalToken:     personalToken,
+			PersonalTableID:   FindTableInBitable(personalToken),
 		})
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
