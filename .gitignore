@@ -32,4 +32,5 @@ go.work
 
 /log/
 /.vscode/
-config.yaml
+config.
+*.json
