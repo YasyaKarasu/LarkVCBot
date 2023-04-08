@@ -57,6 +57,46 @@ func CheckEvents() {
 				)
 				model.SetSession(event.Id, string(struct2bytes(record)))
 
+				card, _ := feishuapi.NewMessageCard().
+					WithConfig(
+						feishuapi.NewMessageCardConfig().
+							WithEnableForward(true).
+							WithUpdateMulti(true).
+							Build(),
+					).
+					WithHeader(
+						feishuapi.NewMessageCardHeader().
+							WithTemplate(feishuapi.TemplateBlue).
+							WithTitle(feishuapi.NewMessageCardPlainText().
+								WithContent("🔍 发现新日程").
+								Build(),
+							).
+							Build(),
+					).
+					WithElements([]feishuapi.MessageCardElement{
+						feishuapi.NewMessageCardMarkdown().
+							WithContent("发现此群聊下有新日程，点击跳转日程安排页面，设置主持人以接受会前统计数据").
+							Build(),
+						feishuapi.NewMessageCardAction().
+							WithActions([]feishuapi.MessageCardActionElement{
+								feishuapi.NewMessageCardButton().
+									WithType(feishuapi.TypePrimary).
+									WithText(
+										feishuapi.NewMessageCardPlainText().
+											WithContent("去设置").
+											Build(),
+									).
+									WithURL("https://xn4zlkzg4p.feishu.cn/wiki/" + groupSpace.ScheduleNodeToken).
+									Build(),
+							}),
+					}).Build().String()
+				global.FeishuClient.MessageSend(
+					feishuapi.GroupChatId,
+					calendar.GroupChatID,
+					feishuapi.Interactive,
+					card,
+				)
+
 				if time.Unix(int64(startTime)/1000, 0).Day() != time.Now().Day() {
 					timer := cron.New(cron.WithSeconds())
 					timer.AddFunc("* * * "+time.Unix(int64(startTime)/1000, 0).Add(-time.Hour*24).Format("02 01")+" *", func() {

@@ -21,5 +21,9 @@ func InitEvent() {
 
 func InitMessageBind() {
 	chat.GroupMessageRegister(initialize, "初始化")
+	chat.GroupMessageRegister(groupHelp, "帮助")
+	chat.GroupMessageRegister(groupHelp, "help")
 	chat.GroupStatusDispatcherRegister(StatusDispatcher)
+	chat.P2PMessageRegister(p2pHelp, "帮助")
+	chat.P2PMessageRegister(p2pHelp, "help")
 }
