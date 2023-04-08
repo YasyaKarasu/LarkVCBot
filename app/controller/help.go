@@ -73,17 +73,32 @@ func groupHelp(messageevent *chat.MessageEvent, args ...any) {
 			feishuapi.NewMessageCardImage().
 				WithAlt(
 					feishuapi.NewMessageCardPlainText().
-						WithContent("选择日历").
+						WithContent("PC端选择日历").
 						Build(),
 				).
 				WithTitle(
 					feishuapi.NewMessageCardPlainText().
-						WithContent("选择日历").
+						WithContent("PC端选择日历").
 						Build(),
 				).
 				WithMode(feishuapi.ModeFitHorizontal).
 				WithPreview(true).
 				WithImageKey("img_v2_c14a5068-3b73-4aa8-8105-1956ba870f8g").
+				Build(),
+			feishuapi.NewMessageCardImage().
+				WithAlt(
+					feishuapi.NewMessageCardPlainText().
+						WithContent("移动端选择日历").
+						Build(),
+				).
+				WithTitle(
+					feishuapi.NewMessageCardPlainText().
+						WithContent("移动端选择日历").
+						Build(),
+				).
+				WithMode(feishuapi.ModeFitHorizontal).
+				WithPreview(true).
+				WithImageKey("img_v2_07d0f924-5d41-41f6-891b-78d977a1dfcg").
 				Build(),
 		}).Build().String()
 	global.FeishuClient.MessageSend(
