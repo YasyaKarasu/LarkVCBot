@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/YasyaKarasu/feishuapi"
-	"github.com/robfig/cron/v3"
 	"github.com/sirupsen/logrus"
 )
 
@@ -160,7 +159,7 @@ func (job CreateMinuteJob) Run() {
 		map[string]any{
 			"标题":       event.EventInfo.Summary,
 			"备注":       event.EventInfo.Description,
-			"日期":       startTime,
+			"日期":       startTime * 1000,
 			"主持人":      fields["主持人"],
 			"应到人员":     fields["应到人员"],
 			"请假人员":     fields["请假人员"],
@@ -169,23 +168,4 @@ func (job CreateMinuteJob) Run() {
 			"妙记链接":     fields["妙记链接"],
 		},
 	)
-
-	timer := cron.New(cron.WithSeconds())
-	timer.AddFunc(time.Unix(int64(startTime), 0).Format("05 04 15 02 01")+"*", func() {
-		global.FeishuClient.DocumentCreateBlock(
-			minuteNodeInfo.ObjToken,
-			minuteNodeInfo.ObjToken,
-			feishuapi.OpenId,
-			[]feishuapi.BlockCreate{{
-				BlockType: 28,
-				BlockISV: &feishuapi.BlockISV{
-					ComponentID:     "7221484303179005954",
-					ComponentTypeID: "blk_5f992038c64240015d280958",
-				},
-			}},
-			-1,
-		)
-		timer.Stop()
-	})
-	timer.Start()
 }
