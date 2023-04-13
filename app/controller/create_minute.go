@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/YasyaKarasu/feishuapi"
+	"github.com/robfig/cron/v3"
 	"github.com/sirupsen/logrus"
 )
 
@@ -169,4 +170,22 @@ func (job CreateMinuteJob) Run() {
 		},
 	)
 
+	timer := cron.New(cron.WithSeconds())
+	timer.AddFunc(time.Unix(int64(startTime), 0).Format("05 04 15 02 01")+"*", func() {
+		global.FeishuClient.DocumentCreateBlock(
+			minuteNodeInfo.ObjToken,
+			minuteNodeInfo.ObjToken,
+			feishuapi.OpenId,
+			[]feishuapi.BlockCreate{{
+				BlockType: 28,
+				BlockISV: &feishuapi.BlockISV{
+					ComponentID:     "7221484303179005954",
+					ComponentTypeID: "blk_5f992038c64240015d280958",
+				},
+			}},
+			-1,
+		)
+		timer.Stop()
+	})
+	timer.Start()
 }
