@@ -4,6 +4,7 @@ import (
 	"LarkVCBot/global"
 	"LarkVCBot/model"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/YasyaKarasu/feishuapi"
@@ -230,11 +231,60 @@ func (job UpdateAfterEventJob) Run() {
 		event.Id,
 		feishuapi.OpenId,
 	)
+
+	attendStaffs := make([]feishuapi.FieldStaff, 0)              //应到
+	absentStaffs := make([]feishuapi.FieldStaff, 0)              //请假
+	actualAttendStaffs := make([]feishuapi.FieldStaff, 0)        //实到
+	absenceWithoutLeaveStaffs := make([]feishuapi.FieldStaff, 0) //缺席
+
+	// to find absenceWithoutLeaveStaffs
+	type void struct{}
+	var member void
+	set := make(map[string]void) // New empty set
+
+	absentIDs := make([]string, 0)
+	for _, attendee := range attendees {
+		attendStaffs = append(attendStaffs, feishuapi.FieldStaff{
+			ID: attendee.UserId,
+		})
+		set[attendee.UserId] = member
+		if attendee.RSVPStatus == feishuapi.Decline {
+			absentStaffs = append(absentStaffs, feishuapi.FieldStaff{
+				ID: attendee.UserId,
+			})
+			absentIDs = append(absentIDs, attendee.UserId)
+		}
+	}
+
 	user_ids := make([]feishuapi.FieldStaff, 0)
 	for _, attendee := range attendees {
 		user_ids = append(user_ids, feishuapi.FieldStaff{
 			ID: attendee.UserId,
 		})
+	}
+	_startTime, _ := strconv.ParseInt(event.EventInfo.StartTime.Timestamp, 10, 64)
+	_endTime, _ := strconv.ParseInt(event.EventInfo.EndTime.Timestamp, 10, 64)
+	_url := event.EventInfo.VChat.MeetingUrl
+	_meetingNo := strings.Split(_url, "/")
+	meetingNo := _meetingNo[len(_meetingNo)-1]
+	actualAttendees := global.FeishuClient.VCQueryParticipantList(
+		_startTime-300,
+		_endTime+6000,
+		meetingNo,
+	)
+
+	for _, actualAttendee := range actualAttendees {
+		actualAttendStaffs = append(actualAttendStaffs, feishuapi.FieldStaff{
+			ID: actualAttendee.UserId,
+		})
+		delete(set, actualAttendee.UserId)
+	}
+
+	for k := range set {
+		_tmp := &feishuapi.FieldStaff{
+			ID: k,
+		}
+		absenceWithoutLeaveStaffs = append(absenceWithoutLeaveStaffs, *_tmp)
 	}
 
 	global.FeishuClient.DocumentUpdateRecord(
@@ -247,7 +297,9 @@ func (job UpdateAfterEventJob) Run() {
 			"日期":       startTime,
 			"主持人":      fields["主持人"],
 			"应到人员":     user_ids,
+			"实到人员":     actualAttendStaffs,
 			"请假人员":     fields["请假人员"],
+			"缺席人员":     absenceWithoutLeaveStaffs,
 			"状态":       "已结束",
 			"会议记录文档链接": fields["会议记录文档链接"],
 			"妙记链接":     fields["妙记链接"],
