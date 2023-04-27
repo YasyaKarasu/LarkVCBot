@@ -68,7 +68,7 @@ func groupHelp(messageevent *chat.MessageEvent, args ...any) {
 				WithContent(
 					"2. 机器人完成初始化后将为群聊创建一张日历，当机器人检测到**此日历下**有新日程，" +
 						"将自动将日程添加到知识库日程排期中，并提示前往排期页面设置会议主持人，以接受会前统计信息。" +
-						"同时，在日程前一天，机器人将在知识库创建会议记录文档。",
+						"同时，在日程前一天，机器人将在知识库创建会议记录文档。记得从日程发起视频会议（点日程开始前飞书弹出的发起视频会议）哦~",
 				),
 			feishuapi.NewMessageCardImage().
 				WithAlt(
