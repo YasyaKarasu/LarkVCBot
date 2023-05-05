@@ -125,10 +125,10 @@ func CheckEvents() {
 				)
 				endTime, _ := strconv.ParseUint(event.EventInfo.EndTime.Timestamp, 10, 64)
 				timer.AddJob(
-					time.Unix(int64(endTime)/1000, 0).Format("05 04 15 02 01")+" *",
+					time.Unix(int64(endTime), 0).Format("05 04 15 02 01")+" *",
 					UpdateAfterEventJob{calendar.CalendarID, event.Id},
 				)
-				timer.AddFunc(time.Unix(int64(endTime)/1000+5*60, 0).Format("05 04 15 02 01")+" *", func() {
+				timer.AddFunc(time.Unix(int64(endTime)+5*60, 0).Format("05 04 15 02 01")+" *", func() {
 					model.ClearSession(event.Id)
 					timer.Stop()
 				})
