@@ -66,11 +66,12 @@ func (job CreateMinuteJob) Run() {
 		return
 	}
 	for _, attendee := range attendees {
+		_attendee := attendee
 		textElements = append(textElements, feishuapi.TextElement{
 			MentionUser: &struct {
 				UserID *string `json:"user_id,omitempty"`
 			}{
-				UserID: &attendee.UserId,
+				UserID: &_attendee.UserId,
 			},
 		})
 	}
